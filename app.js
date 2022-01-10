@@ -1,3 +1,20 @@
+const StorageCtrl = (function(){
+	return {
+		storeItem: function(item){
+			let items;
+			if(localStorage.getItem('items') == null){
+				items = [];
+				items.push(item);
+				localStorage.setItem('items', JSON.stringify(items));
+			} else {
+				items = JSON.pase(localStorage.getItem('items'));
+				items.push(item);
+				localStorage.setItem('items', JSON.stringify(items));
+			}
+		}
+	}
+})();
+
 const ItemCtrl = (function(){
 	const Item = function(id, name, calories){
 		this.id = id
@@ -104,7 +121,7 @@ const UICtrl = (function(){
 
 })();
 
-const App = (function(ItemCtrl, UICtrl){
+const App = (function(ItemCtrl, StorageCtrl, UICtrl){
 	const loadEventListeners = function(){
 		const UISelectors = UICtrl.getSelectors();
 		document.querySelector(UISelector.addBtn).addEventListener('click',itemAddSubmit);
@@ -129,6 +146,6 @@ const App = (function(ItemCtrl, UICtrl){
 			loadEventListeners();
 		}
 	}
-})(ItemCtrl, UICtrl);
+})(ItemCtrl, StorageCtrl, UICtrl);
 
 App.init()
