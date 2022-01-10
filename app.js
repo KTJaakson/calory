@@ -11,6 +11,15 @@ const StorageCtrl = (function(){
 				items.push(item);
 				localStorage.setItem('items', JSON.stringify(items));
 			}
+		},
+		getItemsFromStroage: function(){
+			let items;
+			if(localStorage.getItem('items') === null){
+				items = [];
+			} else {
+				items = JSON.parse(localStorage.getItem('items'));
+			}
+			return items;
 		}
 	}
 })();
@@ -125,6 +134,7 @@ const App = (function(ItemCtrl, StorageCtrl, UICtrl){
 	const loadEventListeners = function(){
 		const UISelectors = UICtrl.getSelectors();
 		document.querySelector(UISelector.addBtn).addEventListener('click',itemAddSubmit);
+		document.addEventListener('DOMContentLoaded', getItemsFromStroage)
 	}
 
 	const itemAddSubmit = function(event){
@@ -134,9 +144,19 @@ const App = (function(ItemCtrl, StorageCtrl, UICtrl){
 			UICtrl.addListItem(newItem)
 			const totalCalories = ItemCtrl.getTotalCalories();
 			UICtrl.showTotalCalories(totalCalories);
+			StorageCtrl.storeItem(newItem);
 			UICtrl.clearInput();
 		}
 		event.preventDefault()
+	}
+	const getItemsFromStorage = function(){
+		const items = StorageCtrl.getItemsFromStorage()
+		items.forEach(function(item){
+			ItemCtrl.addItem(item['name'], item['calories'])
+		})
+		const totalCalories = ItemCtrl.getTotalCalories();
+		UICtrl.showTotalCalories(totalCalories);
+		UICtrl.populateItemList(items)
 	}
 	return {
 		init: function(){
