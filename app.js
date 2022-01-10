@@ -18,6 +18,18 @@ const ItemCtrl = (function(){
 		getItems: function(){
 			return data.items
 		},
+		addItem: function(name, calories){
+			let ID;
+			if(data.items.length > 0){
+				ID = data.items[data.items.length - 1].id + 1
+			} else {
+				ID = 0
+			}
+			calories = parseInt(calories);
+			newItem = new Item(ID, name, calories);
+			data.items.push(newItem);
+			return newItem
+		}
 		logData: function(){
 			return data
 		}
@@ -29,7 +41,10 @@ const ItemCtrl = (function(){
 const UICtrl = (function(){
 
 	const UISelectors = {
-		itemList: '#item-list'
+		itemList: '#item-list',
+		itemNameInput: '#item-name',
+		itemCaloriesInput: '#item-calories',
+		addBtn: '.add-btn'
 	}
 	return {
 		populateItemList: function(items){
@@ -46,17 +61,39 @@ const UICtrl = (function(){
 
 			document.querySelector(UISelectors.itemList).innerHTML = html;
 		}
+	},
+	getSelectors: function(){
+		return UISelectors;
+	},
+	getItemInput: function(){
+		return {
+			name:document.querySelector(UISelectors.itemNameInput).value,
+			calories:document.querySelector(UISelectors.itemCaloriesInput).value
+		}
 	}
-	console.log('UICtrl')
 
 })();
 
 const App = (function(ItemCtrl, UICtrl){
+	const loadEventListeners = function(){
+		const UISelectors = UICtrl.getSelectors();
+		document.querySelector(UISelector.addBtn).addEventListener('click',itemAddSubmit);
+	}
+
+	const itemAddSubmit = function(event){
+		const input = UICtrl.getItemInput()
+		if(input.name !== '' && input.calories !== ''){
+			const newItem = ItemCtrl.addItem(input.name, input.calories)
+			console.log(newItem)
+		}
+		event.preventDefault()
+	}
 	return {
 		init: function(){
 			console.log('Initializing App')
 			const items = ItemCtrl.getItems()
 			UICtrl.populateItemList(items)
+			loadEventListeners();
 		}
 	}
 })(ItemCtrl, UICtrl);
